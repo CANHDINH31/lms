@@ -18,6 +18,7 @@ declare module 'vue' {
     Assignment: typeof import('./src/components/Assignment.vue')['default']
     AssignmentForm: typeof import('./src/components/Modals/AssignmentForm.vue')['default']
     AudioBlock: typeof import('./src/components/AudioBlock.vue')['default']
+    AudioComponent: typeof import('./src/components/AudioComponent.vue')['default']
     Autocomplete: typeof import('./src/components/Controls/Autocomplete.vue')['default']
     BatchCard: typeof import('./src/components/BatchCard.vue')['default']
     BatchCourseModal: typeof import('./src/components/Modals/BatchCourseModal.vue')['default']
@@ -62,6 +63,7 @@ declare module 'vue' {
     Link: typeof import('./src/components/Controls/Link.vue')['default']
     LiveClass: typeof import('./src/components/LiveClass.vue')['default']
     LiveClassModal: typeof import('./src/components/Modals/LiveClassModal.vue')['default']
+    LiveKitRoom: typeof import('./src/components/LiveKitRoom.vue')['default']
     LMSLogo: typeof import('./src/components/Icons/LMSLogo.vue')['default']
     Members: typeof import('./src/components/Members.vue')['default']
     MobileLayout: typeof import('./src/components/MobileLayout.vue')['default']
@@ -93,5 +95,6 @@ declare module 'vue' {
     UserAvatar: typeof import('./src/components/UserAvatar.vue')['default']
     UserDropdown: typeof import('./src/components/UserDropdown.vue')['default']
     VideoBlock: typeof import('./src/components/VideoBlock.vue')['default']
+    VideoComponent: typeof import('./src/components/VideoComponent.vue')['default']
   }
 }
