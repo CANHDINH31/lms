@@ -8,13 +8,17 @@ import {
 	VideoPresets,
 	Track,
 } from 'livekit-client'
-import { onUnmounted } from 'vue'
+import { onUnmounted, ref } from 'vue'
 
 let _room: Room | undefined
+const connected = ref(false)
 
 const state = {
 	get room() {
 		return _room
+	},
+	get connected() {
+		return connected.value
 	},
 }
 
@@ -61,6 +65,7 @@ async function joinRoom() {
 	try {
 		await _room.connect(LIVEKIT_URL, token)
 		await _room.localParticipant.enableCameraAndMicrophone()
+		connected.value = true
 		console.log('Participants:', _room.numParticipants)
 		console.log('Connected to room', _room.name)
 	} catch (error: any) {
@@ -71,10 +76,8 @@ async function joinRoom() {
 
 async function leaveRoom() {
 	await _room?.disconnect()
-
-	// Empty all variables
 	_room = undefined
-
+	connected.value = false
 	window.removeEventListener('beforeunload', leaveRoom)
 }
 
@@ -84,15 +87,57 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div v-if="!state.room" id="join">
-		<div id="join-dialog" @click="joinRoom">
-			<button title="Call">📞</button>
-		</div>
-	</div>
-	<div v-else id="room">
-		<div id="room-header">
-			<button title="Disconnect" @click="leaveRoom">❌</button>
-		</div>
+	<div id="chat-widget">
+		<button
+			v-if="!state.connected"
+			id="chat-toggle"
+			title="Call"
+			aria-label="Call"
+			@click="joinRoom"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="icon"
+				viewBox="0 0 24 24"
+			>
+				<path d="M12 1v11"></path>
+				<path d="M8 5a4 4 0 0 0 8 0"></path>
+				<path d="M19 11a7 7 0 0 1-14 0"></path>
+				<line x1="12" y1="19" x2="12" y2="23"></line>
+				<line x1="8" y1="23" x2="16" y2="23"></line>
+			</svg>
+		</button>
+
+		<button
+			v-else
+			id="chat-toggle-disconnect"
+			title="Disconnect"
+			aria-label="Disconnect"
+			@click="leaveRoom"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="24"
+				height="24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				class="icon"
+				viewBox="0 0 24 24"
+			>
+				<line x1="18" y1="6" x2="6" y2="18"></line>
+				<line x1="6" y1="6" x2="18" y2="18"></line>
+			</svg>
+		</button>
 	</div>
 </template>
 
@@ -102,77 +147,58 @@ onUnmounted(() => {
 	bottom: 24px;
 	right: 24px;
 	z-index: 9999;
-	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	user-select: none;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Nút icon tròn khi chưa mở */
+/* Nút gọi - màu xanh dịu */
 #chat-toggle {
 	width: 56px;
 	height: 56px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #10a37f, #22c55e);
-	box-shadow: 0 8px 15px rgba(16, 163, 127, 0.4);
-	color: white;
-	font-size: 28px;
 	border: none;
+	background-color: #4a90e2;
+	color: white;
 	cursor: pointer;
+	box-shadow: 0 4px 10px rgba(74, 144, 226, 0.5);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	transition: box-shadow 0.3s ease;
+	transition:
+		box-shadow 0.3s ease,
+		transform 0.15s ease;
 }
 
 #chat-toggle:hover {
-	box-shadow: 0 12px 20px rgba(16, 163, 127, 0.7);
+	box-shadow: 0 6px 20px rgba(74, 144, 226, 0.7);
+	transform: scale(1.1);
 }
 
-/* Khung chat mở rộng */
-#chat-window {
-	width: 320px;
-	height: 420px;
-	background: white;
-	border-radius: 12px;
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-	display: flex;
-	flex-direction: column;
-	overflow: hidden;
-	font-size: 14px;
-	color: #222;
-}
-
-/* Header khung chat */
-#chat-header {
-	background: linear-gradient(135deg, #10a37f, #22c55e);
+/* Nút ngắt kết nối - màu xám dịu */
+#chat-toggle-disconnect {
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	border: none;
+	background-color: #7f8c8d;
 	color: white;
-	padding: 12px 16px;
-	font-weight: 600;
+	cursor: pointer;
+	box-shadow: 0 4px 10px rgba(127, 140, 141, 0.5);
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
-	font-size: 16px;
+	justify-content: center;
+	transition:
+		box-shadow 0.3s ease,
+		transform 0.15s ease;
 }
 
-/* Nút đóng */
-#chat-close-btn {
-	background: transparent;
-	border: none;
-	color: white;
-	font-size: 22px;
-	cursor: pointer;
-	line-height: 1;
+#chat-toggle-disconnect:hover {
+	box-shadow: 0 6px 20px rgba(127, 140, 141, 0.7);
+	transform: scale(1.1);
 }
 
-/* Phần nội dung chat - tạm để trống */
-#chat-content {
-	flex-grow: 1;
-	padding: 16px;
-	overflow-y: auto;
-	background: #f9f9f9;
-}
-
-/* Ẩn khung chat mặc định */
-#chat-window.hidden {
-	display: none;
+.icon {
+	width: 24px;
+	height: 24px;
 }
 </style>
