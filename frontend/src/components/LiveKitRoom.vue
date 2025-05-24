@@ -46,6 +46,7 @@ async function joinRoom() {
 			publication: RemoteTrackPublication,
 			participant: RemoteParticipant,
 		) => {
+			console.log('🔈 Track subscribed:', _track.kind, participant.identity)
 			if (_track.kind === Track.Kind.Audio) {
 				const audioElement = _track.attach()
 				console.log('audioElement', audioElement)
@@ -57,10 +58,6 @@ async function joinRoom() {
 			}
 		},
 	)
-
-	_room.on(RoomEvent.TrackSubscribed, (track, pub, participant) => {
-		console.log('🔈 Track subscribed:', track.kind, participant.identity)
-	})
 
 	try {
 		await _room.connect(LIVEKIT_URL, token)
