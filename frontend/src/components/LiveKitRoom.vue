@@ -72,10 +72,14 @@ async function joinRoom() {
 }
 
 async function leaveRoom() {
-	await _room?.disconnect()
-	_room = undefined
-	connected.value = false
-	window.removeEventListener('beforeunload', leaveRoom)
+	try {
+		await _room?.disconnect()
+		_room = undefined
+		connected.value = false
+		window.removeEventListener('beforeunload', leaveRoom)
+	} catch (error) {
+		console.log(error)
+	}
 }
 
 onUnmounted(() => {
